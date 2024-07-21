@@ -1,0 +1,191 @@
+<html>
+<head>
+    <title>PacMan Gato</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #d7d6d6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #header {
+            display: flex;
+            justify-content: space-between;
+            width: 400px;
+            color: rgb(12, 12, 12);
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px;
+        }
+        #background {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .fila {
+            display: flex;
+        }
+       
+        .pared, .burguer, .blank, .papitas, #gato, #perro {
+            height: 40px;
+            width: 40px;
+        }
+        .pared {
+            background-color: rgb(0, 94, 128);
+        }
+        .burguer, .blank, .papitas {
+            background-color: black;
+        }
+        .burguer {
+            background-image: url('burguer.png');
+            background-size: contain;
+        }
+        .papitas {
+            background-image: url('papitas.png');
+            background-size: contain;
+        }
+        #gato {
+            background-image: url('gato.gif');
+            background-size: contain;
+            position: absolute;
+        }
+        #perro {
+            background-image: url('perro.gif');
+            background-size: contain;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="puntaje">Puntaje: 0</div>
+        <div id="vidas">Vidas: 3</div>
+    </div>
+    <div id="background">
+        <div id="mundo"></div>
+        <div id="gato"></div>
+        <div id="perro"></div>
+    </div>
+    <script type="text/javascript">
+        function random(max, min) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        var mundo = [
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,0,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),0,1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),random(-1,4),1],
+            [1,1,1,1,1,1,1,1,1,1],
+        ];
+        
+        var mundoDict = {
+            0: 'blank',
+            1: 'pared',
+            2: 'burguer',
+            3: 'papitas',
+        };
+        
+        var puntaje = 0;
+        var vidas = 3;
+
+        function dibujarMundo() {
+            var output = "";
+            for (var fila = 0; fila < mundo.length; fila++) {
+                output += "<div class='fila'>";
+                for (var x = 0; x < mundo[fila].length; x++) {
+                    output += "<div class='" + mundoDict[mundo[fila][x]] + "'></div>";
+                }
+                output += "</div>";
+            }
+            document.getElementById('mundo').innerHTML = output;
+        }
+
+        dibujarMundo();
+
+        var gato = { x: 1, y: 1 };
+        var perro = { x: 2, y: 3 };
+
+        function dibujarGato() {
+            document.getElementById('gato').style.top = gato.y * 40 + 'px';
+            document.getElementById('gato').style.left = gato.x * 40 + 'px';
+        }
+
+        function dibujaPerro() {
+            document.getElementById('perro').style.top = perro.y * 40 + 'px';
+            document.getElementById('perro').style.left = perro.x * 40 + 'px';
+        }
+
+        function muevePerro() {
+            var mueve = random(0, 3);
+            if (mueve === 0 && perro.x > 0 && mundo[perro.y][perro.x - 1] !== 1) {
+                perro.x--;
+            } else if (mueve === 1 && perro.x < mundo[0].length - 1 && mundo[perro.y][perro.x + 1] !== 1) {
+                perro.x++;
+            } else if (mueve === 2 && perro.y > 0 && mundo[perro.y - 1][perro.x] !== 1) {
+                perro.y--;
+            } else if (mueve === 3 && perro.y < mundo.length - 1 && mundo[perro.y + 1][perro.x] !== 1) {
+                perro.y++;
+            }
+        }
+
+        document.onkeydown = function(e) {
+            if (e.keyCode === 37 && gato.x > 0 && mundo[gato.y][gato.x - 1] !== 1) {
+                gato.x--;
+            }
+            if (e.keyCode === 38 && gato.y > 0 && mundo[gato.y - 1][gato.x] !== 1) {
+                gato.y--;
+            }
+            if (e.keyCode === 39 && gato.x < mundo[0].length - 1 && mundo[gato.y][gato.x + 1] !== 1) {
+                gato.x++;
+            }
+            if (e.keyCode === 40 && gato.y < mundo.length - 1 && mundo[gato.y + 1][gato.x] !== 1) {
+                gato.y++;
+            }
+
+            if (mundo[gato.y][gato.x] === 2) {
+                mundo[gato.y][gato.x] = 0;
+                puntaje += 10;
+                document.getElementById('puntaje').innerText = "Puntaje: " + puntaje;
+            } else if (mundo[gato.y][gato.x] === 3) {
+                mundo[gato.y][gato.x] = 0;
+                puntaje += 5;
+                document.getElementById('puntaje').innerText = "Puntaje: " + puntaje;
+            }
+
+            if (gato.x === perro.x && gato.y === perro.y) {
+                vidas--;
+                document.getElementById('vidas').innerText = "Vidas: " + vidas;
+                if (vidas === 0) {
+                    alert("Game Over! Tu puntaje: " + puntaje);
+                    location.reload();
+                }
+            }
+
+            dibujarGato();
+            dibujarMundo();
+        };
+
+        function bucle() {
+            muevePerro();
+            dibujaPerro();
+            setTimeout(bucle, 750);
+        }
+
+        dibujarGato();
+        dibujaPerro();
+        bucle();
+    </script>
+</html>
+
